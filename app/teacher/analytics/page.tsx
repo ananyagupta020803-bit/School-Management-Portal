@@ -42,20 +42,18 @@ export default async function TeacherAnalytics() {
   );
 
   // Get class performance
-  const classPerformance = await query<any>(
-    `SELECT 
-       c.name as class_name,
-       c.section,
-       AVG((g.marks / g.max_marks) * 100) as avg_percentage,
-       COUNT(DISTINCT g.student_id) as student_count
-     FROM grades g
-     JOIN students s ON g.student_id = s.id
-     JOIN classes c ON s.class = c.name AND s.section = c.section
-     WHERE g.teacher_id = ?
-     GROUP BY c.name, c.section
-     ORDER BY c.name, c.section`,
-    [teacher.id]
-  );
+const recentGrades = await query<any>(
+  `SELECT g.*, s.name as subject_name,
+          st.student_id,
+          u.name as student_name
+   FROM grades g
+   JOIN subjects s ON g.subject_id = s.id
+   JOIN students st ON g.student_id = st.id
+   JOIN users u ON st.user_id = u.id
+   ORDER BY g.created_at DESC
+   LIMIT 5`
+);
+
 
   // Get attendance statistics
   const attendanceStats = await query<any>(

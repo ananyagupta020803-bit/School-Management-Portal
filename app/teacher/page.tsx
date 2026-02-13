@@ -35,19 +35,18 @@ export default async function TeacherDashboard() {
   );
 
   // Get recent grades uploaded by this teacher
-  const recentGrades = await query<any>(
-    `SELECT g.*, s.name as subject_name,
-            st.student_id,
-            u.name as student_name
-     FROM grades g
-     JOIN subjects s ON g.subject_id = s.id
-     JOIN students st ON g.student_id = st.id
-     JOIN users u ON st.user_id = u.id
-     WHERE g.teacher_id = ?
-     ORDER BY g.created_at DESC
-     LIMIT 5`,
-    [teacher.id]
-  );
+const recentGrades = await query<any>(
+  `SELECT g.*, s.name as subject_name,
+          st.student_id,
+          u.name as student_name
+   FROM grades g
+   JOIN subjects s ON g.subject_id = s.id
+   JOIN students st ON g.student_id = st.id
+   JOIN users u ON st.user_id = u.id
+   ORDER BY g.created_at DESC
+   LIMIT 5`
+);
+
 
   return (
     <DashboardLayout>
