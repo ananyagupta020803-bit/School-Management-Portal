@@ -1,18 +1,12 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from './auth';
 import { redirect } from 'next/navigation';
-import { UserRole } from '@/lib/roles';
+import { authOptions } from './auth';
+import { UserRole } from './roles';
 
 export async function requireRole(allowedRoles: UserRole[]) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect('/login');
-  }
-
-  const userRole = session.user.role as UserRole;
-
-  if (!allowedRoles.includes(userRole)) {
+  if (!session || !allowedRoles.includes(session.user.role as UserRole)) {
     redirect('/unauthorized');
   }
 

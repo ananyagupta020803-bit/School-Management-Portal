@@ -1,17 +1,15 @@
 import mysql from 'mysql2/promise';
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'school_management',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not defined in environment variables');
+}
 
-export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> {
+const pool = mysql.createPool(process.env.DATABASE_URL);
+
+export async function query<T = any>(
+  sql: string,
+  params?: any[]
+): Promise<T[]> {
   try {
     const [results] = await pool.execute(sql, params);
     return results as T[];
@@ -21,7 +19,10 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T[]> 
   }
 }
 
-export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
+export async function queryOne<T = any>(
+  sql: string,
+  params?: any[]
+): Promise<T | null> {
   const results = await query<T>(sql, params);
   return results[0] || null;
 }

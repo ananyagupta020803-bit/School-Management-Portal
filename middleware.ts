@@ -1,41 +1,29 @@
 import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
-import { UserRole } from '@/lib/roles';
+import { UserRole } from './lib/roles';
 
 export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const { pathname } = req.nextUrl;
-
-    if (!token) {
-      return NextResponse.redirect(new URL('/login', req.url));
-    }
-
-    const role = token.role as UserRole;
-
-    if (pathname.startsWith('/admin') && role !== UserRole.ADMIN) {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
-
-    if (
-      pathname.startsWith('/teacher') &&
-      ![UserRole.ADMIN, UserRole.TEACHER].includes(role)
-    ) {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
-
-    if (
-      pathname.startsWith('/student') &&
-      ![UserRole.ADMIN, UserRole.STUDENT].includes(role)
-    ) {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
-
-    return NextResponse.next();
-  },
+  function middleware() {},
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token, req }) => {
+        const pathname = req.nextUrl.pathname;
+
+        if (!token) return false;
+
+        if (pathname.startsWith('/admin')) {
+          return token.role === UserRole.ADMIN;
+        }
+
+        if (pathname.startsWith('/teacher')) {
+          return token.role === UserRole.TEACHER;
+        }
+
+        if (pathname.startsWith('/student')) {
+          return token.role === UserRole.STUDENT;
+        }
+
+        return true;
+      },
     },
   }
 );

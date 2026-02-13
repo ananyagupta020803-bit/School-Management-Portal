@@ -15,11 +15,21 @@ export default function DashboardLayout({
 
   const role = session.user.role as UserRole;
 
-  const navLinks = {
-    ADMIN: [{ label: 'Dashboard', href: '/admin' }],
-    TEACHER: [{ label: 'Dashboard', href: '/teacher' }],
-    STUDENT: [{ label: 'Dashboard', href: '/student' }],
+  const navLinks: Record<UserRole, { label: string; href: string }[]> = {
+    [UserRole.ADMIN]: [
+      { label: 'Dashboard', href: '/admin' },
+      { label: 'Teachers', href: '/admin/teachers' },
+      { label: 'Students', href: '/admin/students' },
+    ],
+    [UserRole.TEACHER]: [
+      { label: 'Dashboard', href: '/teacher' },
+    ],
+    [UserRole.STUDENT]: [
+      { label: 'Dashboard', href: '/student' },
+    ],
   };
+
+  const links = navLinks[role] || [];
 
   return (
     <div className="flex min-h-screen">
@@ -27,7 +37,7 @@ export default function DashboardLayout({
         <h2 className="text-xl font-bold mb-6">School Portal</h2>
 
         <nav className="space-y-3">
-          {navLinks[role].map((link) => (
+          {links.map((link) => (
             <Link key={link.href} href={link.href}>
               <div className="hover:bg-gray-700 p-2 rounded cursor-pointer">
                 {link.label}

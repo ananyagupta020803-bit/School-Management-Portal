@@ -1,11 +1,11 @@
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  TEACHER = 'TEACHER',
-  STUDENT = 'STUDENT',
+  ADMIN = 'admin',
+  TEACHER = 'teacher',
+  STUDENT = 'student',
 }
 
 export const roleRedirectMap: Record<UserRole, string> = {
-  ADMIN: '/admin',
-  TEACHER: '/teacher',
-  STUDENT: '/student',
+  [UserRole.ADMIN]: '/admin',
+  [UserRole.TEACHER]: '/teacher',
+  [UserRole.STUDENT]: '/student',
 };
